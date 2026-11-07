@@ -1,5 +1,7 @@
 import type { Locale } from "@prisma/client";
 import { requireAdmin, type CurrentAdmin } from "./admin-auth";
+import { adminBlocked } from "./admin-access";
+import { notFound } from "./errors";
 import { clientIp, readCookie, route } from "./http";
 import { LIMITS, limitAll, rule } from "./rate-limit";
 import { idSchema } from "@/lib/validation";
@@ -25,6 +27,7 @@ export function adminRoute(
   handler: (req: Request, params: Record<string, string>, admin: CurrentAdmin) => Promise<Response>,
 ) {
   return route<Ctx>(async (req, ctx) => {
+    if (adminBlocked(req.headers)) throw notFound();
     const admin = await requireAdmin();
     const raw = ctx?.params ? await ctx.params : {};
     const params: Record<string, string> = {};
