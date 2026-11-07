@@ -1,4 +1,4 @@
-# Pioneers of Medicine — Exhibition website
+# Basis of Life — Exhibition website
 
 Bilingual (English / සිංහල) exhibition site for a public exhibition in Sri Lanka:
 
