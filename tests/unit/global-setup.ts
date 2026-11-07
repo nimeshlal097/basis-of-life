@@ -7,7 +7,7 @@ export default function setup() {
   // Tests truncate tables between cases, so only ever run against a dedicated test database.
   if (!/test/i.test(url)) throw new Error("Refusing to use a database whose URL does not contain 'test'.");
   execSync("npx prisma migrate deploy", {
-    env: { ...process.env, DATABASE_URL: url, PRISMA_HIDE_UPDATE_MESSAGE: "1" },
+    env: { ...process.env, DATABASE_URL: url, DIRECT_URL: url, PRISMA_HIDE_UPDATE_MESSAGE: "1" },
     stdio: "inherit",
   });
 }

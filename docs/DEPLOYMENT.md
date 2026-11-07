@@ -4,6 +4,22 @@ The app is a standard Next.js 16 server application backed by PostgreSQL. Any ho
 
 > Nothing has been deployed by this project. The steps below are what remains to be done with your own accounts.
 
+## Recommended free setup: Vercel + Neon
+
+1. **Neon** → new project, region **Asia Pacific (Singapore)**. From *Connect*, copy the **pooled** string (host contains `-pooler`) and the **direct** string.
+2. Put them in a local, git-ignored `.env.neon` (see `.env.example` for the format). `DATABASE_URL` = pooled + `&pgbouncer=true&connect_timeout=15`; `DIRECT_URL` = direct.
+3. Apply migrations and sample content from your machine:
+   ```bash
+   set -a; . ./.env.neon; set +a          # PowerShell: Get-Content .env.neon | ? { $_ -match '^\w+=' } | % { $k,$v = $_ -split '=',2; Set-Item "env:$k" $v.Trim('"') }
+   npx prisma migrate deploy
+   npm run db:seed
+   npm run admin:create -- --email you@example.org --name "Your Name"
+   ```
+4. **Vercel** → *Add New → Project* → import the GitHub repo. Framework: Next.js. **Build Command: `npm run vercel-build`** (runs `prisma migrate deploy` before `next build`, so later schema changes apply automatically). Add the variables from `.env.neon` under *Environment Variables* for **Production**. `vercel.json` pins functions to Singapore (`sin1`), next to the database.
+5. After the first deploy, set `NEXTAUTH_URL` and `PUBLIC_BASE_URL` to the production address Vercel shows, redeploy, then set the same address in Admin → Settings → Public base URL.
+
+Do not set `ADMIN_LOCAL_ONLY`, `APP_ENV`, `DEMO_ADMIN_PASSWORD` or `DISABLE_RATE_LIMIT` on Vercel.
+
 ## 1. Create the database
 
 1. Create a PostgreSQL database in a region close to Sri Lanka (e.g. Mumbai / Singapore). UTF-8 encoding is required (default on managed providers).
